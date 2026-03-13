@@ -3,24 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>26AS Parser Tools </title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>26AS Parser Tool </title>
+    <link rel="stylesheet" href="../static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+      <style>
+    .container{max-width: 1500px;}
+    .nav-link{font-weight: 500;}
+   </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
-        <header class="main-header">
+           <div class="container">
+<header class="position-sticky top-0" style="z-index: 999; border-bottom: 1px solid #d6d6d6;">
+            <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.relievv.in/">
+               <img src="../images/logo.png" alt="logo" style="width: 120px;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.relievv.in/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://relievv.in/#tools">All Tools</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://relievv.in/#categories">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://relievv.in/#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://relievv.in/blog">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://relievv.in/contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End  -->
+   
+    </header>
+      
+        <div class="main-header bacckground-back-vl position-static top-0">
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">
                         <i class="fas fa-file-invoice-dollar"></i>
                     </div>
                     <div class="logo-text">
-                        <h1>26AS PARSER TOOLS</h1>
-                        <p>Professional 26AS PDF parsing tool for tax professionals</p>
+                        <h1>26AS PARSER </h1>
+                        <p class="mb-0">Transform Form 26AS into analysis-ready Excel format for TDS reconciliation and tax review.</p>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1.5rem;">
@@ -29,10 +74,10 @@
                     </div>
                 </div>
             </div>
-        </header>
+        </div>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content p-0">
             <!-- File Upload Section -->
             <section class="upload-section">
                 <div class="section-header">
@@ -129,8 +174,8 @@
                                 </div>
                             </div>
                             <div class="pdf-preview-container" id="pdfViewer">
-                                <div style="text-align: center; padding: 4rem; color: var(--text-light);">
-                                    <i class="fas fa-file-pdf" style="font-size: 4rem; margin-bottom: 1.5rem; display: block; color: var(--border-blue);"></i>
+                                <div style="text-align: center; padding: 4rem; color: var( --accent-blue);">
+                                    <i class="fas fa-file-pdf" style="font-size: 4rem; margin-bottom: 1.5rem; display: block; color: var(--accent-blue);"></i>
                                     <h3 style="margin-bottom: 0.8rem; color: var(--primary-blue);">No PDF to Display</h3>
                                     <p>Upload a 26AS PDF file to see the preview here</p>
                                 </div>
@@ -272,15 +317,15 @@
         </main>
 
         <!-- Footer -->
-        <footer class="main-footer">
+        <footer class="main-footer bacckground-back-vl">
             <div class="footer-content">
                 <div class="copyright">
-                    © <script>document.write(new Date().getFullYear())</script> 26AS PARSER TOOLS.
+                    © <script>document.write(new Date().getFullYear())</script> Relievv Automation • 26AS PARSER TOOLS.  Version 3 • professional edition
                 </div>
                 <div class="footer-links">
-                    <a href="#"><i class="fas fa-question-circle"></i> Help</a>
-                    <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy</a>
+                     <a href="https://relievv.in/contact" target="_blank"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="https://relievv.in/contact" target="_blank"><i class="fas fa-envelope"></i> Contact</a>
+                    <a href="https://relievv.in/privacy-policy" target="_blank"><i class="fas fa-shield-alt"></i> Privacy</a>
                 </div>
             </div>
         </footer>
@@ -302,15 +347,16 @@
             </div>
         </div>
     </div>
-
+      
+           </div>
     <!-- Download Modal -->
-    <div class="modal-overlay" id="reportModal">
-        <div class="modal">
-            <div class="modal-header">
+    <div class="modal-overlays" id="reportModal">
+        <div class="modals">
+            <div class="modal-headers">
                 <h2><i class="fas fa-file-download"></i> Download Excel File</h2>
-                <button class="close-modal" id="closeModal">&times;</button>
+                <button class="close-modal" id="closeModal"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-bodys">
                 <div class="summary-grid">
                     <div class="summary-item">
                         <div class="summary-label">PDF Pages</div>
@@ -347,7 +393,8 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="../static/js/script.js"></script>
+    <script src="../bootstrap.min.js"></script>
 </body>
 
 </html>
