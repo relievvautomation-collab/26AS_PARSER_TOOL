@@ -324,7 +324,7 @@ async function loadPDF(file) {
         showNotification('Error loading PDF file. Please ensure it\'s a valid 26AS PDF.', 'error');
         
         pdfViewer.innerHTML = `
-            <div style="text-align: center; padding: 4rem; color: var(--text-light);">
+            <div style="text-align: center; padding: 4rem; color: var(--accent-blue);">
                 <i class="fas fa-exclamation-triangle" style="font-size: 4rem; margin-bottom: 1.5rem; display: block; color: var(--warning-orange);"></i>
                 <h3 style="margin-bottom: 0.8rem; color: var(--primary-blue);">Error Loading PDF</h3>
                 <p>Please ensure you've uploaded a valid 26AS PDF file from TRACES.</p>
@@ -482,7 +482,7 @@ function updateExcelPreview() {
     if (extractedData.transactions.length === 0) {
         excelBody.innerHTML = `
             <tr>
-                <td colspan="13" style="text-align: center; padding: 4rem; color: var(--text-light);">
+                <td colspan="13" style="text-align: center; padding: 4rem; color: var(--accent-blue);">
                     <i class="fas fa-file-excel" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
                     <h3 style="margin-bottom: 0.5rem; color: var(--primary-blue);">No Data to Display</h3>
                     <p>Parse 26AS PDF to see the extracted Excel data here</p>
@@ -732,8 +732,8 @@ function resetTool() {
     
     // Reset previews
     pdfViewer.innerHTML = `
-        <div style="text-align: center; padding: 4rem; color: var(--text-light);">
-            <i class="fas fa-file-pdf" style="font-size: 4rem; margin-bottom: 1.5rem; display: block; color: var(--border-blue);"></i>
+        <div style="text-align: center; padding: 4rem; color: var(--accent-blue);">
+            <i class="fas fa-file-pdf" style="font-size: 4rem; margin-bottom: 1.5rem; display: block; color: var(--accent-blue);"></i>
             <h3 style="margin-bottom: 0.8rem; color: var(--primary-blue);">No PDF to Display</h3>
             <p>Upload a 26AS PDF file to see the preview here</p>
         </div>
