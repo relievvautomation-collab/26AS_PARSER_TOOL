@@ -671,7 +671,7 @@ body {
 
 .modals {
     background: white;
-    border-radius: 12px;
+    border-radius: 0px;
     width: 100%;
     max-width: 700px;
     max-height: 90vh;
@@ -695,7 +695,7 @@ body {
     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
     color: white;
     padding: 1.8rem;
-    border-radius: 12px 12px 0 0;
+    border-radius: 0px;
     display: flex;
     justify-content: space-between;
     align-items: center;
