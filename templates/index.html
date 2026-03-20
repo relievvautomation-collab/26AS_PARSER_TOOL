@@ -3,17 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>26AS Parser Tool </title>
-    <link rel="stylesheet" href="../static/css/style.css">
+       <!-- =============================================
+         SEO META TAGS
+         ============================================= -->
+      <!-- Primary SEO --> 
+    <title>26AS Parser Tool – Convert Form 26AS PDF to Excel | Relievv</title>
+    <meta name="description" content="Free online 26AS Parser Tool. Convert Form 26AS PDF from TRACES into analysis-ready Excel format instantly. Extract TDS deductions, Part-I & Part-II data for reconciliation and tax review.">
+    <meta name="keywords" content="26AS parser, 26AS PDF to Excel, Form 26AS converter, TDS reconciliation tool, TRACES 26AS, 26AS Excel, TDS deduction Excel, 26AS online tool, income tax 26AS, tax statement parser">
+    <meta name="author" content="Relievv Automation">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://26as.relievv.in/">
+ 
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="26AS Parser Tool – Convert Form 26AS PDF to Excel | Relievv">
+    <meta property="og:description" content="Convert your Form 26AS PDF from TRACES into a structured Excel file instantly. Extract Part-I & Part-II TDS data for tax reconciliation. Free, secure, no signup required.">
+    <meta property="og:url" content="https://relievv.in/26as-parser">
+    <meta property="og:site_name" content="Relievv Automation">
+    <meta property="og:image" content="https://relievv.in/images/og-26as-parser.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_IN">
+ 
+   
+    <!-- Geo & Language -->
+    <meta name="geo.region" content="IN">
+    <meta name="geo.country" content="India">
+    <meta name="language" content="English">
+ 
+    <!-- Schema.org Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "26AS Parser Tool",
+      "url": "https://26as.relievv.in/",
+      "description": "Convert Form 26AS PDF from TRACES into analysis-ready Excel format. Extract Part-I and Part-II TDS deduction data for reconciliation and tax review.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Chrome 80+, Firefox 75+, Safari 14+, Edge 80+",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "Relievv Automation",
+        "url": "https://relievv.in"
+      },
+      "featureList": [
+        "Convert 26AS PDF to Excel",
+        "Extract Part-I TDS deduction data",
+        "Extract Part-II 15G/15H data",
+        "Auto-detect PAN and Financial Year",
+        "Calculate Net Amount and TDS Rate",
+        "Secure client-side processing"
+      ]
+    }
+    </script>
+ 
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the 26AS Parser Tool?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The 26AS Parser Tool converts your Form 26AS PDF downloaded from the TRACES portal into a structured Excel file, making it easy to perform TDS reconciliation and tax review."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which parts of 26AS does the tool extract?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The tool extracts Part-I (TDS Deductions) and Part-II (15G/15H declarations) from your 26AS PDF."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the 26AS Parser Tool free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, the 26AS Parser Tool is completely free to use. No signup or payment is required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my 26AS data safe with this tool?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Your data is processed securely. Uploaded files are automatically deleted after processing and no personal or financial data is stored permanently."
+          }
+        }
+      ]
+    }
+    </script>
+ 
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://relievv.in"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://relievv.in/#tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "26AS Parser Tool",
+          "item": "https://26as.relievv.in/"
+        }
+      ]
+    }
+    </script>
+ 
+    <!-- =============================================
+         END SEO META TAGS
+         ============================================= -->
+ 
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+ 
       <style>
     .container{max-width: 1500px;}
     .nav-link{font-weight: 500;}
    </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BD4X9NYYFF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BD4X9NYYFF');
+</script>
 </head>
 <body>
     <div class="app-container">
