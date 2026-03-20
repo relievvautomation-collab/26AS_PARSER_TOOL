@@ -3,13 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>26AS Parser Tool </title>
+        <!-- =============================================
+         SEO META TAGS
+         ============================================= -->
+      <!-- Primary SEO -->
+    <title>26AS Parser Tool – Convert Form 26AS PDF to Excel | Relievv</title>
+    <meta name="description" content="Free online 26AS Parser Tool. Convert Form 26AS PDF from TRACES into analysis-ready Excel format instantly. Extract TDS deductions, Part-I & Part-II data for reconciliation and tax review.">
+    <meta name="keywords" content="26AS parser, 26AS PDF to Excel, Form 26AS converter, TDS reconciliation tool, TRACES 26AS, 26AS Excel, TDS deduction Excel, 26AS online tool, income tax 26AS, tax statement parser">
+    <meta name="author" content="Relievv Automation">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://relievv.in/26as-parser">
+ 
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="26AS Parser Tool – Convert Form 26AS PDF to Excel | Relievv">
+    <meta property="og:description" content="Convert your Form 26AS PDF from TRACES into a structured Excel file instantly. Extract Part-I & Part-II TDS data for tax reconciliation. Free, secure, no signup required.">
+    <meta property="og:url" content="https://relievv.in/26as-parser">
+    <meta property="og:site_name" content="Relievv Automation">
+    <meta property="og:image" content="https://relievv.in/images/og-26as-parser.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_IN">
+ 
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="26AS Parser Tool – Convert Form 26AS PDF to Excel">
+    <meta name="twitter:description" content="Free online tool to convert 26AS PDF from TRACES to Excel. Extract TDS data for tax reconciliation instantly.">
+    <meta name="twitter:image" content="https://relievv.in/images/og-26as-parser.png">
+    <meta name="twitter:site" content="@relievv">
+ 
+    <!-- Geo & Language -->
+    <meta name="geo.region" content="IN">
+    <meta name="geo.country" content="India">
+    <meta name="language" content="English">
+ 
+    <!-- Schema.org Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "26AS Parser Tool",
+      "url": "https://relievv.in/26as-parser",
+      "description": "Convert Form 26AS PDF from TRACES into analysis-ready Excel format. Extract Part-I and Part-II TDS deduction data for reconciliation and tax review.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Chrome 80+, Firefox 75+, Safari 14+, Edge 80+",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "Relievv Automation",
+        "url": "https://relievv.in"
+      },
+      "featureList": [
+        "Convert 26AS PDF to Excel",
+        "Extract Part-I TDS deduction data",
+        "Extract Part-II 15G/15H data",
+        "Auto-detect PAN and Financial Year",
+        "Calculate Net Amount and TDS Rate",
+        "Secure client-side processing"
+      ]
+    }
+    </script>
+ 
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the 26AS Parser Tool?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The 26AS Parser Tool converts your Form 26AS PDF downloaded from the TRACES portal into a structured Excel file, making it easy to perform TDS reconciliation and tax review."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which parts of 26AS does the tool extract?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The tool extracts Part-I (TDS Deductions) and Part-II (15G/15H declarations) from your 26AS PDF."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the 26AS Parser Tool free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, the 26AS Parser Tool is completely free to use. No signup or payment is required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my 26AS data safe with this tool?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Your data is processed securely. Uploaded files are automatically deleted after processing and no personal or financial data is stored permanently."
+          }
+        }
+      ]
+    }
+    </script>
+ 
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://relievv.in"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://relievv.in/#tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "26AS Parser Tool",
+          "item": "https://relievv.in/26as-parser"
+        }
+      ]
+    }
+    </script>
+ 
+    <!-- =============================================
+         END SEO META TAGS
+         ============================================= -->
+ 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+ 
       <style>
     .container{max-width: 1500px;}
     .nav-link{font-weight: 500;}
@@ -20,7 +159,7 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
+ 
   gtag('config', 'G-BD4X9NYYFF');
 </script>
 </head>
@@ -404,6 +543,181 @@
 
     <script src="script.js"></script>
     <script src="bootstrap.min.js"></script>
+    x   <script>
+    (function () {
+ 
+        /* ── 1. Browse Button Click ── */
+        document.getElementById('browseButton').addEventListener('click', function () {
+            gtag('event', 'browse_button_click', {
+                event_category: 'File Upload',
+                event_label: 'Browse PDF File Button'
+            });
+        });
+ 
+        /* ── 2. PDF File Selected ── */
+        document.getElementById('fileInput').addEventListener('change', function () {
+            if (this.files.length > 0) {
+                gtag('event', 'pdf_file_selected', {
+                    event_category: 'File Upload',
+                    event_label: 'PDF File Selected',
+                    file_name: this.files[0].name,
+                    file_size_kb: Math.round(this.files[0].size / 1024)
+                });
+            }
+        });
+ 
+        /* ── 3. Drag & Drop PDF ── */
+        document.getElementById('uploadArea').addEventListener('drop', function (e) {
+            var n = e.dataTransfer && e.dataTransfer.files ? e.dataTransfer.files.length : 0;
+            if (n > 0) {
+                gtag('event', 'pdf_drag_drop', {
+                    event_category: 'File Upload',
+                    event_label: 'Drag and Drop PDF Upload'
+                });
+            }
+        });
+ 
+        /* ── 4. Parse 26AS PDF Button ── */
+        document.getElementById('parseBtn').addEventListener('click', function () {
+            gtag('event', 'parse_26as_click', {
+                event_category: 'Tool Action',
+                event_label: 'Parse 26AS PDF Button'
+            });
+        });
+ 
+        /* ── 5. Reset Tool Button ── */
+        document.getElementById('resetBtn').addEventListener('click', function () {
+            gtag('event', 'reset_tool_click', {
+                event_category: 'Tool Action',
+                event_label: 'Reset Tool Button'
+            });
+        });
+ 
+        /* ── 6. Download Button (opens modal) ── */
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            gtag('event', 'download_button_click', {
+                event_category: 'Download',
+                event_label: 'Download Excel Button Opened Modal'
+            });
+        });
+ 
+        /* ── 7. Confirm Download (inside modal) ── */
+        document.getElementById('confirmDownload').addEventListener('click', function () {
+            var txn = document.getElementById('modalTransactionCount')
+                        ? document.getElementById('modalTransactionCount').innerText : '0';
+            gtag('event', 'excel_downloaded', {
+                event_category: 'Download',
+                event_label: 'Confirmed Excel Download',
+                transactions: parseInt(txn) || 0
+            });
+        });
+ 
+        /* ── 8. Close Modal — X button ── */
+        document.getElementById('closeModal').addEventListener('click', function () {
+            gtag('event', 'modal_closed', {
+                event_category: 'Download',
+                event_label: 'Modal Closed via X Button'
+            });
+        });
+ 
+        /* ── 9. Close Modal — Cancel button ── */
+        document.getElementById('closeModalBtn').addEventListener('click', function () {
+            gtag('event', 'modal_cancelled', {
+                event_category: 'Download',
+                event_label: 'Modal Closed via Cancel Button'
+            });
+        });
+ 
+        /* ── 10. Preview Tab Switch (PDF / Excel) ── */
+        document.querySelectorAll('.preview-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                gtag('event', 'preview_tab_click', {
+                    event_category: 'Preview',
+                    event_label: 'Preview Tab: ' + this.innerText.trim()
+                });
+            });
+        });
+ 
+        /* ── 11. PDF Pagination — Previous Page ── */
+        document.getElementById('prevPage').addEventListener('click', function () {
+            gtag('event', 'pdf_prev_page', {
+                event_category: 'PDF Navigation',
+                event_label: 'Previous Page Button'
+            });
+        });
+ 
+        /* ── 12. PDF Pagination — Next Page ── */
+        document.getElementById('nextPage').addEventListener('click', function () {
+            gtag('event', 'pdf_next_page', {
+                event_category: 'PDF Navigation',
+                event_label: 'Next Page Button'
+            });
+        });
+ 
+        /* ── 13. Info Panel Tab Clicks (26AS Format / Data Safety / TDS Sections) ── */
+        document.querySelectorAll('.info-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                gtag('event', 'info_tab_click', {
+                    event_category: 'Engagement',
+                    event_label: 'Info Tab: ' + this.innerText.trim()
+                });
+            });
+        });
+ 
+        /* ── 14. Navbar Link Clicks ── */
+        document.querySelectorAll('.nav-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                gtag('event', 'navbar_click', {
+                    event_category: 'Navigation',
+                    event_label: this.innerText.trim(),
+                    link_url: this.href
+                });
+            });
+        });
+ 
+        /* ── 15. Footer Link Clicks (Help / Contact / Privacy) ── */
+        document.querySelectorAll('.footer-links a').forEach(function (link) {
+            link.addEventListener('click', function () {
+                gtag('event', 'footer_link_click', {
+                    event_category: 'Navigation',
+                    event_label: this.innerText.trim(),
+                    link_url: this.href
+                });
+            });
+        });
+ 
+        /* ── 16. Scroll Depth (25%, 50%, 75%, 90%) ── */
+        var scrollMarks = { 25: false, 50: false, 75: false, 90: false };
+        window.addEventListener('scroll', function () {
+            var pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            Object.keys(scrollMarks).forEach(function (m) {
+                if (!scrollMarks[m] && pct >= m) {
+                    scrollMarks[m] = true;
+                    gtag('event', 'scroll_depth', {
+                        event_category: 'Engagement',
+                        event_label: 'Scrolled ' + m + '%',
+                        value: parseInt(m)
+                    });
+                }
+            });
+        });
+ 
+        /* ── 17. Time on Page (30s, 60s, 120s) ── */
+        [30, 60, 120].forEach(function (s) {
+            setTimeout(function () {
+                gtag('event', 'time_on_page', {
+                    event_category: 'Engagement',
+                    event_label: s + ' seconds on page',
+                    value: s
+                });
+            }, s * 1000);
+        });
+ 
+    })();
+    </script>
+    <!-- =============================================
+         END GA4 EVENT TRACKING
+         ============================================= -->
 </body>
 
 </html>
