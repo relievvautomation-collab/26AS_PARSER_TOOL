@@ -391,6 +391,8 @@ async function parsePDF() {
     try {
         const formData = new FormData();
         formData.append('file', selectedFile);
+        const formatInput = document.querySelector('input[name="statementFormat"]:checked');
+        formData.append('format', formatInput ? formatInput.value : 'old');
         
         // Show progress
         progressFill.style.width = '30%';
@@ -433,7 +435,11 @@ async function parsePDF() {
             previewTabs[1].click();
             
             // Show success notification
-            showNotification(`Successfully parsed ${extractedData.transactions.length} transactions from 26AS PDF`, 'success');
+            if (result.data.format_notice) {
+                showNotification(result.data.format_notice, 'info');
+            } else {
+                showNotification(`Successfully parsed ${extractedData.transactions.length} transactions from 26AS PDF`, 'success');
+            }
             
         } else {
             throw new Error(result.error || 'Unknown error from server');
