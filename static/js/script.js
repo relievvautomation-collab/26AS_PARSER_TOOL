@@ -474,6 +474,10 @@ function updateAssesseeInfo() {
         assesseeName.textContent = extractedData.assessee.name || "Not Available";
         assesseePAN.textContent = extractedData.assessee.pan || "Not Available";
         assesseeFY.textContent = financialYear;
+        const fyLabel = document.getElementById('assesseeFYLabel');
+        if (fyLabel) {
+            fyLabel.textContent = extractedData.assessee.format === 'new' ? 'Tax Year:' : 'Financial Year:';
+        }
     }
 }
 

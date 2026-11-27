@@ -1,12 +1,23 @@
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import pdfplumber
 import pandas as pd
+from openpyxl.styles import Alignment, Border, Font, Side
 import re
 import os
-import fitz  # PyMuPDF
+try:
+    import fitz  # PyMuPDF (optional, not required by the parsers)
+except ImportError:
+    fitz = None
 from datetime import datetime
 import json
 from typing import List, Dict, Optional, Tuple
+
+from annual_tax_statement_parser import (
+    AnnualTaxStatementParser,
+    detect_26as_format,
+    FORMAT_NEW,
+    FORMAT_OLD,
+)
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -1004,6 +1015,41 @@ class TwentySixASParser:
             "total_transactions": len(self.transactions)
         }
 
+def _run_old_parser(filepath):
+    result = TwentySixASParser(filepath).parse()
+    result['format'] = FORMAT_OLD
+    result['assessee_info']['format'] = FORMAT_OLD
+    result['assessee_info']['format_label'] = 'Form 26AS (Income-tax Act, 1961)'
+    return result
+
+
+def _run_new_parser(filepath):
+    return AnnualTaxStatementParser(filepath).parse()
+
+
+def parse_26as_any_format(filepath):
+    """
+    Auto-detect the 26AS layout and parse it with the matching engine.
+    Old format (IT Act 1961: FY/AY, sections like 194C) -> TwentySixASParser
+    New format (IT Act 2025: Tax Year, section codes like 1031) -> AnnualTaxStatementParser
+    If the detected engine finds no transactions, the other one is tried too.
+    """
+    detected = detect_26as_format(filepath)
+    print(f"Detected 26AS format: {detected}")
+    primary, secondary = ((_run_new_parser, _run_old_parser) if detected == FORMAT_NEW
+                          else (_run_old_parser, _run_new_parser))
+    result = primary(filepath)
+    if result.get('total_transactions', 0) == 0:
+        try:
+            alt = secondary(filepath)
+            if alt.get('total_transactions', 0) > 0:
+                print("Primary parser found no transactions; using alternate format parser")
+                result = alt
+        except Exception as e:
+            print(f"Alternate parser failed: {e}")
+    result['detected_format'] = detected
+    return result
+
 @app.route('/')
 def index():
     """Serve the main HTML page"""
@@ -1029,9 +1075,7 @@ def upload_pdf():
     file.save(filepath)
     
     try:
-        # Parse the PDF with advanced parser
-        parser = TwentySixASParser(filepath)
-        result = parser.parse()
+        result = parse_26as_any_format(filepath)
         
         # Clean up
         os.remove(filepath)
@@ -1046,6 +1090,51 @@ def upload_pdf():
         if os.path.exists(filepath):
             os.remove(filepath)
         return jsonify({'error': f'Error parsing PDF: {str(e)}'}), 500
+
+def apply_header_style(worksheet):
+    """Same header look as pandas 1.5.3 writes: bold, thin border, centred."""
+    thin = Side(style='thin')
+    for cell in worksheet[1]:
+        cell.font = Font(bold=True)
+        cell.border = Border(left=thin, right=thin, top=thin, bottom=thin)
+        cell.alignment = Alignment(horizontal='center', vertical='top')
+
+
+def build_party_wise_sheet(transactions, data_row_count):
+    """
+    Build the 'Party Wise' sheet: one row per unique Party Name + TAN + Section
+    (in order of first appearance), with Gross / TDS / Net amounts as Excel
+    formulas that read from the 'TDS Transactions' sheet.
+      'TDS Transactions' columns: B = Name of Deductor, C = TAN, D = Section,
+      H = Amount Paid / Credited, J = TDS Deposited
+    SUMPRODUCT with exact equality is used (not SUMIFS) so names containing
+    *, ? or ~ are matched literally.
+    """
+    columns = ['Party Name', 'TAN', 'Section', 'Gross Amount', 'TDS Amount', 'Net Amount']
+    last = max(data_row_count + 1, 2)
+    src = "'TDS Transactions'!"
+    rng = lambda col: f"{src}${col}$2:${col}${last}"
+
+    parties = []
+    seen = set()
+    for t in transactions:
+        key = (str(t.get('deductor_name', '')), str(t.get('deductor_tan', '')), str(t.get('section', '')))
+        if key not in seen:
+            seen.add(key)
+            parties.append(key)
+
+    rows, display_rows = [], []
+    for i, (name, tan, section) in enumerate(parties, start=2):
+        match = f"({rng('B')}=A{i})*({rng('C')}=B{i})*({rng('D')}=C{i})"
+        rows.append([
+            name, tan, section,
+            f"=SUMPRODUCT({match}*{rng('H')})",
+            f"=SUMPRODUCT({match}*{rng('J')})",
+            f"=D{i}-E{i}",
+        ])
+        display_rows.append([name, tan, section, '0,00,00,000.00', '0,00,00,000.00', '0,00,00,000.00'])
+
+    return pd.DataFrame(rows, columns=columns), pd.DataFrame(display_rows, columns=columns)
 
 @app.route('/download_excel', methods=['POST'])
 def download_excel():
@@ -1105,11 +1194,18 @@ def download_excel():
             # Add transactions sheet
             df.to_excel(writer, sheet_name='TDS Transactions', index=False)
             
-            # Auto-adjust column widths for both sheets
+            # Add Party Wise sheet - formula driven from the TDS Transactions sheet
+            party_df, party_display_df = build_party_wise_sheet(transactions, len(df))
+            party_df.to_excel(writer, sheet_name='Party Wise', index=False)
+            
+            # Auto-adjust column widths for all sheets
             for sheet_name in writer.sheets:
                 worksheet = writer.sheets[sheet_name]
+                apply_header_style(worksheet)
                 if sheet_name == 'TDS Transactions':
                     data_df = df
+                elif sheet_name == 'Party Wise':
+                    data_df = party_display_df
                 else:
                     data_df = metadata_df
                 
@@ -1146,7 +1242,7 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'service': '26AS Parser',
-        'version': '11.0',
+        'version': '12.0',
         'timestamp': datetime.now().isoformat()
     })
 
