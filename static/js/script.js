@@ -487,6 +487,11 @@ function updateAssesseeInfo() {
     }
 }
 
+// New Annual Tax Statement adds a 'PAN of Deductor' column
+function isNewFormat() {
+    return !!(extractedData.assessee && extractedData.assessee.format === 'new');
+}
+
 // Update Excel preview table - Show 50 transactions by default
 function updateExcelPreview() {
     if (extractedData.transactions.length === 0) {
@@ -508,7 +513,7 @@ function updateExcelPreview() {
     document.getElementById('excelHeader').innerHTML = `
         <th>Sr.No</th>
         <th>Name of Deductor</th>
-        <th>TAN of Deductor</th>
+        <th>TAN of Deductor</th>${isNewFormat() ? '<th>PAN of Deductor</th>' : ''}
         <th>Section</th>
         <th>Transaction Date</th>
         <th>Status of Booking*</th>
@@ -542,7 +547,7 @@ function updateExcelPreview() {
         row.innerHTML = `
             <td>${transaction.sr_no || ''}</td>
             <td>${transaction.deductor_name || 'Not Available'}</td>
-            <td>${transaction.deductor_tan || ''}</td>
+            <td>${transaction.deductor_tan || ''}</td>${isNewFormat() ? `<td>${transaction.deductor_pan || ''}</td>` : ''}
             <td>${transaction.section || ''}</td>
             <td>${transaction.transaction_date || ''}</td>
             <td>${transaction.status || 'F'}</td>
@@ -562,7 +567,7 @@ function updateExcelPreview() {
     if (extractedData.transactions.length > 50) {
         const infoRow = document.createElement('tr');
         infoRow.innerHTML = `
-            <td colspan="13" style="text-align: center; padding: 1rem; background: var(--light-blue); color: var(--primary-blue); font-weight: 600;">
+            <td colspan="${isNewFormat() ? 14 : 13}" style="text-align: center; padding: 1rem; background: var(--light-blue); color: var(--primary-blue); font-weight: 600;">
                 <i class="fas fa-info-circle"></i> 
                 Showing first 50 of ${extractedData.transactions.length} transactions. 
                 <button onclick="showAllTransactions()" style="margin-left: 10px; padding: 5px 15px; background: var(--accent-blue); color: white; border: none; border-radius: 4px; cursor: pointer;">
@@ -599,7 +604,7 @@ function showAllTransactions() {
         row.innerHTML = `
             <td>${transaction.sr_no || ''}</td>
             <td>${transaction.deductor_name || 'Not Available'}</td>
-            <td>${transaction.deductor_tan || ''}</td>
+            <td>${transaction.deductor_tan || ''}</td>${isNewFormat() ? `<td>${transaction.deductor_pan || ''}</td>` : ''}
             <td>${transaction.section || ''}</td>
             <td>${transaction.transaction_date || ''}</td>
             <td>${transaction.status || 'F'}</td>

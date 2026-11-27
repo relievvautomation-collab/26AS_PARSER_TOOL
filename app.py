@@ -1112,13 +1112,33 @@ def apply_header_style(worksheet):
         cell.alignment = Alignment(horizontal='center', vertical='top')
 
 
-def build_party_wise_sheet(transactions, data_row_count):
+def _excel_col(idx):
+    """0-based column index -> Excel letter (0 -> A, 26 -> AA)."""
+    letters = ''
+    idx += 1
+    while idx:
+        idx, rem = divmod(idx - 1, 26)
+        letters = chr(65 + rem) + letters
+    return letters
+
+
+def _insert_after(row, after_key, new_key, new_value):
+    """Return a copy of the row dict with new_key inserted right after after_key."""
+    out = {}
+    for k, v in row.items():
+        out[k] = v
+        if k == after_key:
+            out[new_key] = new_value
+    return out
+
+
+def build_party_wise_sheet(transactions, data_row_count, source_columns):
     """
     Build the 'Party Wise' sheet: one row per unique Party Name + TAN + Section
     (in order of first appearance), with Gross / TDS / Net amounts as Excel
     formulas that read from the 'TDS Transactions' sheet.
-      'TDS Transactions' columns: B = Name of Deductor, C = TAN, D = Section,
-      H = Amount Paid / Credited, J = TDS Deposited
+      Columns are located by header name in 'TDS Transactions', so the extra
+      'PAN of Deductor' column of the new format is handled automatically.
     SUMPRODUCT with exact equality is used (not SUMIFS) so names containing
     *, ? or ~ are matched literally.
     """
@@ -1126,6 +1146,11 @@ def build_party_wise_sheet(transactions, data_row_count):
     last = max(data_row_count + 1, 2)
     src = "'TDS Transactions'!"
     rng = lambda col: f"{src}${col}$2:${col}${last}"
+    if not transactions:
+        return (pd.DataFrame(columns=columns), pd.DataFrame(columns=columns), {})
+    col = {name: _excel_col(i) for i, name in enumerate(source_columns)}
+    c_name, c_tan, c_sec = col['Name of Deductor'], col['TAN of Deductor'], col['Section']
+    c_amt, c_tds = col['Amount Paid / Credited'], col['TDS Deposited']
 
     parties = []
     seen = set()
@@ -1147,11 +1172,11 @@ def build_party_wise_sheet(transactions, data_row_count):
         cached[f'D{i}'] = round(gross, 2)
         cached[f'E{i}'] = round(tds, 2)
         cached[f'F{i}'] = round(gross - tds, 2)
-        match = f"({rng('B')}=A{i})*({rng('C')}=B{i})*({rng('D')}=C{i})"
+        match = f"({rng(c_name)}=A{i})*({rng(c_tan)}=B{i})*({rng(c_sec)}=C{i})"
         rows.append([
             name, tan, section,
-            f"=SUMPRODUCT({match}*{rng('H')})",
-            f"=SUMPRODUCT({match}*{rng('J')})",
+            f"=SUMPRODUCT({match}*{rng(c_amt)})",
+            f"=SUMPRODUCT({match}*{rng(c_tds)})",
             f"=D{i}-E{i}",
         ])
         display_rows.append([name, tan, section, '0,00,00,000.00', '0,00,00,000.00', '0,00,00,000.00'])
@@ -1198,9 +1223,10 @@ def download_excel():
         transactions = data['transactions']
         
         # Create DataFrame with all columns including Date of Booking
+        is_new_format = assessee_info.get('format') == FORMAT_NEW
         df_data = []
         for t in transactions:
-            df_data.append({
+            row = {
                 'Sr.No': t.get('sr_no', ''),
                 'Name of Deductor': t.get('deductor_name', ''),
                 'TAN of Deductor': t.get('deductor_tan', ''),
@@ -1214,7 +1240,11 @@ def download_excel():
                 'Net Amount': t.get('net_amount', 0),
                 'Rate %': t.get('rate', 0),
                 'PDF Page No': t.get('page_number', '')
-            })
+            }
+            if is_new_format:
+                # New Annual Tax Statement: PAN of Deductor right after TAN of Deductor
+                row = _insert_after(row, 'TAN of Deductor', 'PAN of Deductor', t.get('deductor_pan', ''))
+            df_data.append(row)
         
         df = pd.DataFrame(df_data)
         
@@ -1245,7 +1275,7 @@ def download_excel():
             df.to_excel(writer, sheet_name='TDS Transactions', index=False)
             
             # Add Party Wise sheet - formula driven from the TDS Transactions sheet
-            party_df, party_display_df, party_cached = build_party_wise_sheet(transactions, len(df))
+            party_df, party_display_df, party_cached = build_party_wise_sheet(transactions, len(df), list(df.columns))
             party_df.to_excel(writer, sheet_name='Party Wise', index=False)
             
             # Auto-adjust column widths for all sheets
