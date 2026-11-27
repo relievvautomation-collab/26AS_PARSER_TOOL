@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import pdfplumber
 import pandas as pd
-from openpyxl.styles import Alignment, Border, Font, Side
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 import re
 import os
 try:
@@ -1166,6 +1166,9 @@ def build_party_wise_sheet(transactions, data_row_count, source_columns):
         gross, tds = sums.get(key, (0.0, 0.0))
         sums[key] = (gross + float(t.get('amount_paid', 0) or 0), tds + float(t.get('tds_deposited', 0) or 0))
 
+    # Highest Gross Amount first (stable: ties keep PDF order)
+    parties.sort(key=lambda p: sums[p][0], reverse=True)
+
     rows, display_rows, cached = [], [], {}
     for i, (name, tan, section) in enumerate(parties, start=2):
         gross, tds = sums[(name, tan, section)]
@@ -1181,7 +1184,30 @@ def build_party_wise_sheet(transactions, data_row_count, source_columns):
         ])
         display_rows.append([name, tan, section, '0,00,00,000.00', '0,00,00,000.00', '0,00,00,000.00'])
 
+    # Total row (formula driven)
+    first, end, total_row = 2, len(parties) + 1, len(parties) + 2
+    rows.append(['Total', None, None,
+                 f"=SUM(D{first}:D{end})", f"=SUM(E{first}:E{end})", f"=SUM(F{first}:F{end})"])
+    display_rows.append(['Total', '', '', '0,00,00,000.00', '0,00,00,000.00', '0,00,00,000.00'])
+    gross_total = round(sum(sums[p][0] for p in parties), 2)
+    tds_total = round(sum(sums[p][1] for p in parties), 2)
+    cached[f'D{total_row}'] = gross_total
+    cached[f'E{total_row}'] = tds_total
+    cached[f'F{total_row}'] = round(sum(cached[f'F{i}'] for i in range(first, end + 1)), 2)
+
     return (pd.DataFrame(rows, columns=columns), pd.DataFrame(display_rows, columns=columns), cached)
+
+
+def style_total_row(worksheet):
+    """Bold, shaded 'Total' row at the bottom of the Party Wise sheet."""
+    last = worksheet.max_row
+    if last < 2 or worksheet.cell(row=last, column=1).value != 'Total':
+        return
+    fill = PatternFill(fill_type='solid', start_color='EEECE1', end_color='EEECE1')
+    for col in range(1, worksheet.max_column + 1):
+        cell = worksheet.cell(row=last, column=col)
+        cell.font = Font(bold=True)
+        cell.fill = fill
 
 
 def store_formula_results(xlsx_path, sheet_xml, cached_values):
@@ -1277,6 +1303,7 @@ def download_excel():
             # Add Party Wise sheet - formula driven from the TDS Transactions sheet
             party_df, party_display_df, party_cached = build_party_wise_sheet(transactions, len(df), list(df.columns))
             party_df.to_excel(writer, sheet_name='Party Wise', index=False)
+            style_total_row(writer.sheets['Party Wise'])
             
             # Auto-adjust column widths for all sheets
             for sheet_name in writer.sheets:
