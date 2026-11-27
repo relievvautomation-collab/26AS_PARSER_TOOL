@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 import pdfplumber
 import pandas as pd
+from openpyxl.styles import Alignment, Border, Font, Side
 import re
 import os
 try:
@@ -1090,6 +1091,15 @@ def upload_pdf():
             os.remove(filepath)
         return jsonify({'error': f'Error parsing PDF: {str(e)}'}), 500
 
+def apply_header_style(worksheet):
+    """Same header look as pandas 1.5.3 writes: bold, thin border, centred."""
+    thin = Side(style='thin')
+    for cell in worksheet[1]:
+        cell.font = Font(bold=True)
+        cell.border = Border(left=thin, right=thin, top=thin, bottom=thin)
+        cell.alignment = Alignment(horizontal='center', vertical='top')
+
+
 def build_party_wise_sheet(transactions, data_row_count):
     """
     Build the 'Party Wise' sheet: one row per unique Party Name + TAN + Section
@@ -1187,14 +1197,11 @@ def download_excel():
             # Add Party Wise sheet - formula driven from the TDS Transactions sheet
             party_df, party_display_df = build_party_wise_sheet(transactions, len(df))
             party_df.to_excel(writer, sheet_name='Party Wise', index=False)
-            party_ws = writer.sheets['Party Wise']
-            for row in party_ws.iter_rows(min_row=2, min_col=4, max_col=6):
-                for cell in row:
-                    cell.number_format = '#,##0.00'
             
             # Auto-adjust column widths for all sheets
             for sheet_name in writer.sheets:
                 worksheet = writer.sheets[sheet_name]
+                apply_header_style(worksheet)
                 if sheet_name == 'TDS Transactions':
                     data_df = df
                 elif sheet_name == 'Party Wise':
