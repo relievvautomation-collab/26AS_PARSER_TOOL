@@ -230,6 +230,28 @@
         <main class="main-content p-0">
             <!-- File Upload Section -->
             <section class="upload-section">
+                <div class="format-selector" role="radiogroup" aria-label="Select statement type">
+                    <label class="format-option">
+                        <input type="radio" name="statementFormat" value="old" checked>
+                        <span class="format-card">
+                            <span class="format-radio"></span>
+                            <span class="format-text">
+                                <span class="format-title">Form 26AS</span>
+                                <span class="format-sub">Up to Assessment Year 2026-27 &middot; Income-tax Act, 1961</span>
+                            </span>
+                        </span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="statementFormat" value="new">
+                        <span class="format-card">
+                            <span class="format-radio"></span>
+                            <span class="format-text">
+                                <span class="format-title">Annual Tax Statement</span>
+                                <span class="format-sub">Tax Year 2026-27 onwards &middot; Income-tax Act, 2025</span>
+                            </span>
+                        </span>
+                    </label>
+                </div>
                 <div class="section-header">
                     <h2><i class="fas fa-cloud-upload-alt"></i> Upload 26AS PDF File</h2>
                     <div class="file-counter">
@@ -243,7 +265,7 @@
                         </div>
                         <h3 class="upload-text">Drag & Drop 26AS PDF Here</h3>
                         <p class="upload-subtext">
-                            Supports standard 26AS PDF format from TRACES. All processing happens securely on our server.
+                            Supports both formats downloaded from TRACES: Form 26AS (Income-tax Act, 1961) and the new Annual Tax Statement (Income-tax Act, 2025). All processing happens securely on our server.
                         </p>
                         <button class="upload-button" id="browseButton">
                             <i class="fas fa-folder-open"></i> Browse PDF File

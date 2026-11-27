@@ -1027,27 +1027,39 @@ def _run_new_parser(filepath):
     return AnnualTaxStatementParser(filepath).parse()
 
 
-def parse_26as_any_format(filepath):
+FORMAT_NAMES = {
+    FORMAT_OLD: 'Form 26AS',
+    FORMAT_NEW: 'Annual Tax Statement',
+}
+
+
+def parse_26as_any_format(filepath, selected_format=None):
     """
-    Auto-detect the 26AS layout and parse it with the matching engine.
-    Old format (IT Act 1961: FY/AY, sections like 194C) -> TwentySixASParser
-    New format (IT Act 2025: Tax Year, section codes like 1031) -> AnnualTaxStatementParser
-    If the detected engine finds no transactions, the other one is tried too.
+    Parse with the engine for the statement type the user selected
+    (Form 26AS -> TwentySixASParser, Annual Tax Statement -> AnnualTaxStatementParser).
+    With no selection the layout is auto-detected. If the chosen engine finds
+    no transactions, the other engine is tried and a notice is returned.
     """
-    detected = detect_26as_format(filepath)
-    print(f"Detected 26AS format: {detected}")
-    primary, secondary = ((_run_new_parser, _run_old_parser) if detected == FORMAT_NEW
+    chosen = selected_format if selected_format in (FORMAT_OLD, FORMAT_NEW) else detect_26as_format(filepath)
+    print(f"26AS format used: {chosen} (selected: {selected_format})")
+    primary, secondary = ((_run_new_parser, _run_old_parser) if chosen == FORMAT_NEW
                           else (_run_old_parser, _run_new_parser))
     result = primary(filepath)
+    result['format_notice'] = ''
     if result.get('total_transactions', 0) == 0:
         try:
             alt = secondary(filepath)
             if alt.get('total_transactions', 0) > 0:
-                print("Primary parser found no transactions; using alternate format parser")
+                other = FORMAT_NEW if chosen == FORMAT_OLD else FORMAT_OLD
+                print("Selected parser found no transactions; using the other format parser")
+                alt['format_notice'] = (
+                    f"This PDF looks like {FORMAT_NAMES[other]}, not {FORMAT_NAMES[chosen]}. "
+                    f"It was parsed as {FORMAT_NAMES[other]}: "
+                    f"{alt.get('total_transactions', 0)} transactions found."
+                )
                 result = alt
         except Exception as e:
             print(f"Alternate parser failed: {e}")
-    result['detected_format'] = detected
     return result
 
 @app.route('/')
@@ -1075,7 +1087,7 @@ def upload_pdf():
     file.save(filepath)
     
     try:
-        result = parse_26as_any_format(filepath)
+        result = parse_26as_any_format(filepath, request.form.get('format'))
         
         # Clean up
         os.remove(filepath)
@@ -1123,8 +1135,18 @@ def build_party_wise_sheet(transactions, data_row_count):
             seen.add(key)
             parties.append(key)
 
-    rows, display_rows = [], []
+    sums = {}
+    for t in transactions:
+        key = (str(t.get('deductor_name', '')), str(t.get('deductor_tan', '')), str(t.get('section', '')))
+        gross, tds = sums.get(key, (0.0, 0.0))
+        sums[key] = (gross + float(t.get('amount_paid', 0) or 0), tds + float(t.get('tds_deposited', 0) or 0))
+
+    rows, display_rows, cached = [], [], {}
     for i, (name, tan, section) in enumerate(parties, start=2):
+        gross, tds = sums[(name, tan, section)]
+        cached[f'D{i}'] = round(gross, 2)
+        cached[f'E{i}'] = round(tds, 2)
+        cached[f'F{i}'] = round(gross - tds, 2)
         match = f"({rng('B')}=A{i})*({rng('C')}=B{i})*({rng('D')}=C{i})"
         rows.append([
             name, tan, section,
@@ -1134,7 +1156,35 @@ def build_party_wise_sheet(transactions, data_row_count):
         ])
         display_rows.append([name, tan, section, '0,00,00,000.00', '0,00,00,000.00', '0,00,00,000.00'])
 
-    return pd.DataFrame(rows, columns=columns), pd.DataFrame(display_rows, columns=columns)
+    return (pd.DataFrame(rows, columns=columns), pd.DataFrame(display_rows, columns=columns), cached)
+
+
+def store_formula_results(xlsx_path, sheet_xml, cached_values):
+    """
+    openpyxl saves formulas without a calculated result, so Excel shows them
+    blank until it recalculates (it does not in Protected View or in many
+    previewers). Write the already-known results into the formula cells so the
+    amounts show immediately; the formulas stay live for later edits.
+    """
+    import shutil
+    import tempfile
+    import zipfile
+
+    with zipfile.ZipFile(xlsx_path) as zin:
+        xml = zin.read(sheet_xml).decode('utf-8')
+        for ref, value in cached_values.items():
+            xml = re.sub(
+                rf'(<c r="{ref}"[^>]*>\s*<f>.*?</f>)\s*(?:<v\s*/>|<v>[^<]*</v>)?',
+                lambda m: f'{m.group(1)}<v>{value}</v>',
+                xml, count=1, flags=re.S,
+            )
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx', dir=os.path.dirname(xlsx_path) or '.')
+        tmp.close()
+        with zipfile.ZipFile(tmp.name, 'w', zipfile.ZIP_DEFLATED) as zout:
+            for item in zin.infolist():
+                data = xml.encode('utf-8') if item.filename == sheet_xml else zin.read(item.filename)
+                zout.writestr(item, data)
+    shutil.move(tmp.name, xlsx_path)
 
 @app.route('/download_excel', methods=['POST'])
 def download_excel():
@@ -1195,7 +1245,7 @@ def download_excel():
             df.to_excel(writer, sheet_name='TDS Transactions', index=False)
             
             # Add Party Wise sheet - formula driven from the TDS Transactions sheet
-            party_df, party_display_df = build_party_wise_sheet(transactions, len(df))
+            party_df, party_display_df, party_cached = build_party_wise_sheet(transactions, len(df))
             party_df.to_excel(writer, sheet_name='Party Wise', index=False)
             
             # Auto-adjust column widths for all sheets
@@ -1218,6 +1268,9 @@ def download_excel():
                     col_idx = list(data_df.columns).index(column)
                     col_letter = chr(65 + col_idx) if col_idx < 26 else chr(64 + col_idx // 26) + chr(65 + col_idx % 26)
                     worksheet.column_dimensions[col_letter].width = min(max_length, 50)
+        
+        # Party Wise is the 3rd sheet -> xl/worksheets/sheet3.xml
+        store_formula_results(excel_path, 'xl/worksheets/sheet3.xml', party_cached)
         
         return jsonify({
             'success': True,
